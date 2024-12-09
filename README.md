@@ -7,4 +7,4 @@ game similar to Duck Game.
 If you are familiar with `git`, I would recommend cloning the repository.
 Otherwise, you can select the green `Code` button and download the repository as
 a zip folder:
-[Image of the "Download as Zip" Button](./git_assets/download_scrot.png)
+[Image of the "Download as Zip" Button](/git_assets/download_scrot.png)
