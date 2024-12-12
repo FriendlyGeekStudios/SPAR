@@ -7,6 +7,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "MovieSceneTracksComponentTypes.h"
+#include "Spar/Weapons/WeaponBase.h"
 
 
 // Sets default values
@@ -20,6 +22,8 @@ ASparCharacter::ASparCharacter()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+
+	WeaponAttachPoint = CreateDefaultSubobject<USceneComponent>("Weapon Attach Point");
 }
 
 void ASparCharacter::BeginPlay()
@@ -47,11 +51,27 @@ void ASparCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	UEnhancedInputComponent* EnhancedInputComponent =  Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	if (IsValid(EnhancedInputComponent))
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASparCharacter::Move);
+
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ASparCharacter::JumpStarted);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ASparCharacter::JumpEnded);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Canceled, this, &ASparCharacter::JumpEnded);
 	}
+}
+
+bool ASparCharacter::HasWeapon() const
+{
+	return bIsArmed;
+}
+
+void ASparCharacter::EquipWeapon(AWeaponBase* WeaponToEquip)
+{
+	WeaponToEquip->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+
+	bIsArmed = true;
 }
 
 void ASparCharacter::Move(const FInputActionValue& Value)
@@ -71,14 +91,27 @@ void ASparCharacter::UpdateDirection(float MoveDirection)
 		if (CurrentRotation.Yaw != 180.0f)
 		{
 			// Update rotation
-			Controller->SetControlRotation(FRotator(CurrentRotation.Pitch, 180.0f,CurrentRotation.Roll));
+			Controller->SetControlRotation(FRotator(CurrentRotation.Pitch, 180.0f, CurrentRotation.Roll));
 		}
-	} else if ( MoveDirection > 0.0f )
+	}
+	else if (MoveDirection > 0.0f)
 	{
 		// Face Right
 		if (CurrentRotation.Yaw != 0.0f)
 		{
-			Controller->SetControlRotation(FRotator(CurrentRotation.Pitch, 0.0f,CurrentRotation.Roll));
+			Controller->SetControlRotation(FRotator(CurrentRotation.Pitch, 0.0f, CurrentRotation.Roll));
 		}
 	}
+}
+
+void ASparCharacter::JumpStarted()
+{
+	// if(canMove){
+	Jump();
+	//}
+}
+
+void ASparCharacter::JumpEnded()
+{
+	StopJumping();
 }
