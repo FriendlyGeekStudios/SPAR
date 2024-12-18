@@ -6,6 +6,11 @@
 #include "GameFramework/GameModeBase.h"
 #include "SparGameMode.generated.h"
 
+class ASharedCamera;
+class ASparCharacter;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNewPlayerJoined, APawn*, NewPlayer);
+
 /**
  * 
  */
@@ -13,4 +18,27 @@ UCLASS()
 class SPAR_API ASparGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+	virtual void BeginPlay() override;
+
+	void SpawnNewPlayer(APlayerController* PlayerController);
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNewPlayerJoined OnNewPlayerJoined;
+
+private:
+	void GatherAllPlayerStarts();
+	APlayerStart* GetPlayerStart(int32 PlayerIndex);
+	APlayerController* GetOrSpawnNewPlayerController(int32 PlayerIndex);
+	void GatherSharedCamera();
+
+	TArray<APlayerStart*> PlayerStarts{};
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<ASparCharacter> GameplayCharacterClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	ASharedCamera* SharedCamera;
 };

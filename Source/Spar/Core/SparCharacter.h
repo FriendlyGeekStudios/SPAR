@@ -33,12 +33,12 @@ public:
 
 	void EquipWeapon(AWeaponBase* WeaponToEquip);
 
-private:
 	void Move(const FInputActionValue& Value);
-	void UpdateDirection(float MoveDirection);
-
 	void JumpStarted();
 	void JumpEnded();
+
+private:
+	void UpdateDirection(float MoveDirection);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -46,15 +46,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USpringArmComponent* SpringArm;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UInputMappingContext* InputMappingContext;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UInputAction* MoveAction;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UInputAction* JumpAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USceneComponent> WeaponAttachPoint;

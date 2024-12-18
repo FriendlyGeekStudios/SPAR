@@ -29,17 +29,6 @@ ASparCharacter::ASparCharacter()
 void ASparCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	APlayerController* PlayerController = Cast<APlayerController>(Controller);
-	if (IsValid(PlayerController))
-	{
-		UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
-			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-		if (IsValid(InputSubsystem))
-		{
-			InputSubsystem->AddMappingContext(InputMappingContext, 0);
-		}
-	}
 }
 
 void ASparCharacter::Tick(float DeltaTime)
@@ -50,16 +39,6 @@ void ASparCharacter::Tick(float DeltaTime)
 void ASparCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
-	if (IsValid(EnhancedInputComponent))
-	{
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASparCharacter::Move);
-
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ASparCharacter::JumpStarted);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ASparCharacter::JumpEnded);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Canceled, this, &ASparCharacter::JumpEnded);
-	}
 }
 
 bool ASparCharacter::HasWeapon() const
