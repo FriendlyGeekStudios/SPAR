@@ -36,8 +36,6 @@ void ASparController::SetupInactiveStateInputComponent(UInputComponent* InCompon
 void ASparController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
 }
 
 void ASparController::OnPossess(APawn* InPawn)
@@ -111,4 +109,3 @@ void ASparController::EndInactiveState()
 		InputSubsystem->RemoveMappingContext(JoinGameMappingContext);
 	}
 }
-
