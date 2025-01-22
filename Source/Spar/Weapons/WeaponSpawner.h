@@ -19,10 +19,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 protected:
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
 	int WeaponSelectionRating = 0; // 0 = common, 1 = uncommon, 2 = rare, 3 = legendary

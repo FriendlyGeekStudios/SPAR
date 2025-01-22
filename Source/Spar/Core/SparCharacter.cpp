@@ -1,13 +1,15 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "SparCharacter.h"
 
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
-#include "MovieSceneTracksComponentTypes.h"
+#include "PaperFlipbookComponent.h"
+
+#include "Kismet/KismetSystemLibrary.h"
+
 #include "Spar/Weapons/WeaponBase.h"
 
 
@@ -15,7 +17,7 @@
 ASparCharacter::ASparCharacter()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>("Spring Arm");
 	SpringArm->SetupAttachment(RootComponent);
@@ -24,16 +26,20 @@ ASparCharacter::ASparCharacter()
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
 	WeaponAttachPoint = CreateDefaultSubobject<USceneComponent>("Weapon Attach Point");
+
+	DoubleJumpSocket = CreateDefaultSubobject<USceneComponent>("Double Jump Socket");
+	DoubleJumpSocket->SetupAttachment(RootComponent);
+
+	DoubleJump = CreateDefaultSubobject<UPaperFlipbookComponent>("Double Jump Effect");
+	DoubleJump->SetupAttachment(DoubleJumpSocket);
 }
 
 void ASparCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-}
-
-void ASparCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
+	DoubleJump->Stop();
+	DoubleJump->SetLooping(false);
+	DoubleJump->SetVisibility(false);
 }
 
 void ASparCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -86,9 +92,7 @@ void ASparCharacter::UpdateDirection(float MoveDirection)
 
 void ASparCharacter::JumpStarted()
 {
-	// if(canMove){
 	Jump();
-	//}
 }
 
 void ASparCharacter::JumpEnded()
@@ -96,10 +100,53 @@ void ASparCharacter::JumpEnded()
 	StopJumping();
 }
 
-void ASparCharacter::Attack()
+void ASparCharacter::OnJumped_Implementation()
 {
-	if (IsValid(EquippedWeapon))
+	Super::OnJumped_Implementation();
+	if (JumpCurrentCount > 1)
 	{
-		EquippedWeapon->Attack();
+		EnableDoubleJumpEffect();
+		const float FlipbookLength = DoubleJump->GetFlipbookLength();
+		FTimerHandle TimerHandle;
+		GetWorldTimerManager().SetTimer(
+			TimerHandle,
+			[&]() -> void
+			{
+				DisableDoubleJumpEffect();
+				TimerHandle.Invalidate();
+			},
+			FlipbookLength,
+			false
+		);
+	}
+}
+
+void ASparCharacter::EnableDoubleJumpEffect()
+{
+	FDetachmentTransformRules DetachmentRules = FDetachmentTransformRules(
+		EDetachmentRule::KeepWorld,
+		EDetachmentRule::KeepWorld,
+		EDetachmentRule::KeepWorld,
+		true
+	);
+	DoubleJump->DetachFromComponent(DetachmentRules);
+	DoubleJump->SetVisibility(true);
+	DoubleJump->PlayFromStart();
+}
+
+void ASparCharacter::DisableDoubleJumpEffect()
+{
+	DoubleJump->Stop();
+	DoubleJump->SetVisibility(false);
+	FAttachmentTransformRules AttachmentRules = FAttachmentTransformRules(
+		EAttachmentRule::KeepRelative,
+		EAttachmentRule::KeepRelative,
+		EAttachmentRule::KeepRelative,
+		false
+	);
+	const bool AttachementResult = DoubleJump->AttachToComponent(DoubleJumpSocket, AttachmentRules);
+	if (AttachementResult)
+	{
+		DoubleJump->SetRelativeLocation(FVector::ZeroVector);
 	}
 }
