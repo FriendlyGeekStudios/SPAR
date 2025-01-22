@@ -12,6 +12,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class UInputMappingContext;
 class UInputAction;
+class UPaperFlipbookComponent;
 
 UCLASS()
 class SPAR_API ASparCharacter : public APaperZDCharacter
@@ -21,11 +22,7 @@ class SPAR_API ASparCharacter : public APaperZDCharacter
 public:
 	ASparCharacter();
 
-protected:
-	virtual void BeginPlay() override;
-
-public:
-	virtual void Tick(float DeltaTime) override;
+	virtual void OnJumped_Implementation() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -37,19 +34,27 @@ public:
 	void JumpStarted();
 	void JumpEnded();
 
-private:
-	void UpdateDirection(float MoveDirection);
-
 protected:
+	virtual void BeginPlay() override;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UCameraComponent> Camera;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	USpringArmComponent* SpringArm;
+	TObjectPtr<USpringArmComponent> SpringArm;
 
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<USceneComponent> DoubleJumpSocket;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USceneComponent> WeaponAttachPoint;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UPaperFlipbookComponent> DoubleJump;
+
 private:
 	bool bIsArmed = false;
+	void EnableDoubleJumpEffect();
+	void DisableDoubleJumpEffect();
+	void UpdateDirection(float MoveDirection);
 };
