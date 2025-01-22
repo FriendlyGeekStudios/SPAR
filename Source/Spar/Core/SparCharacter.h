@@ -45,20 +45,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<USpringArmComponent> SpringArm;
 
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<USceneComponent> DoubleJumpSocket;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USceneComponent> WeaponAttachPoint;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<UPaperFlipbookComponent> DoubleJump;
+	TObjectPtr<UPaperFlipbookComponent> ExtraJumpEffect;
 
 	TObjectPtr<AWeaponBase> EquippedWeapon = nullptr;
 
 private:
 	bool bIsArmed = false;
-	void EnableDoubleJumpEffect();
-	void DisableDoubleJumpEffect();
+	UPaperFlipbookComponent* EnableExtraJumpEffect();
+	void DisableExtraJumpEffect(UPaperFlipbookComponent* ExtraJumpDuplicate);
 	void UpdateDirection(float MoveDirection);
 };
