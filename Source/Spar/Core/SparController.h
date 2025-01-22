@@ -34,6 +34,8 @@ private:
 	void JumpStarted();
 	void JumpEnded();
 
+	void Attack();
+
 	void OnJoinGameTriggered();
 
 protected:
@@ -45,6 +47,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UInputAction* JumpAction;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UInputAction* AttackAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UInputMappingContext* JoinGameMappingContext;

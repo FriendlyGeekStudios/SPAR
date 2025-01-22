@@ -20,6 +20,8 @@ void ASparController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ASparController::JumpStarted);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ASparController::JumpEnded);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Canceled, this, &ASparController::JumpEnded);
+
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &ASparController::Attack);
 	}
 }
 
@@ -36,8 +38,6 @@ void ASparController::SetupInactiveStateInputComponent(UInputComponent* InCompon
 void ASparController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
 }
 
 void ASparController::OnPossess(APawn* InPawn)
@@ -78,6 +78,15 @@ void ASparController::JumpEnded()
 	}
 }
 
+void ASparController::Attack()
+{
+	if (IsValid(ControlledCharacter))
+	{
+		ControlledCharacter->Attack();
+	}
+}
+
+
 void ASparController::OnJoinGameTriggered()
 {
 	// Tell the GameMode to spawn me a characters
@@ -111,4 +120,3 @@ void ASparController::EndInactiveState()
 		InputSubsystem->RemoveMappingContext(JoinGameMappingContext);
 	}
 }
-

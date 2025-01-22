@@ -49,6 +49,7 @@ bool ASparCharacter::HasWeapon() const
 void ASparCharacter::EquipWeapon(AWeaponBase* WeaponToEquip)
 {
 	WeaponToEquip->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+	EquippedWeapon = WeaponToEquip;
 
 	bIsArmed = true;
 }
@@ -93,4 +94,12 @@ void ASparCharacter::JumpStarted()
 void ASparCharacter::JumpEnded()
 {
 	StopJumping();
+}
+
+void ASparCharacter::Attack()
+{
+	if (IsValid(EquippedWeapon))
+	{
+		EquippedWeapon->Attack();
+	}
 }

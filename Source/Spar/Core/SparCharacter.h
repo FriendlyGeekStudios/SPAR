@@ -37,6 +37,8 @@ public:
 	void JumpStarted();
 	void JumpEnded();
 
+	void Attack();
+
 private:
 	void UpdateDirection(float MoveDirection);
 
@@ -50,6 +52,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USceneComponent> WeaponAttachPoint;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TObjectPtr<AWeaponBase> EquippedWeapon;
 private:
 	bool bIsArmed = false;
 };

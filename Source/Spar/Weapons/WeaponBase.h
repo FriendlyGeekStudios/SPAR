@@ -18,6 +18,9 @@ public:
 	// Sets default values for this actor's properties
 	AWeaponBase();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void Attack();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
