@@ -100,6 +100,14 @@ void ASparCharacter::JumpEnded()
 	StopJumping();
 }
 
+void ASparCharacter::Attack()
+{
+	if (IsValid(EquippedWeapon))
+	{
+		EquippedWeapon->Attack();
+	}
+}
+
 void ASparCharacter::OnJumped_Implementation()
 {
 	Super::OnJumped_Implementation();

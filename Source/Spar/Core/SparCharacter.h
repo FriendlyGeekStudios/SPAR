@@ -34,6 +34,8 @@ public:
 	void JumpStarted();
 	void JumpEnded();
 
+	void Attack();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -51,6 +53,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UPaperFlipbookComponent> DoubleJump;
+
+	TObjectPtr<AWeaponBase> EquippedWeapon = nullptr;
 
 private:
 	bool bIsArmed = false;
