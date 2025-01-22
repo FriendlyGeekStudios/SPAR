@@ -27,19 +27,16 @@ ASparCharacter::ASparCharacter()
 
 	WeaponAttachPoint = CreateDefaultSubobject<USceneComponent>("Weapon Attach Point");
 
-	DoubleJumpSocket = CreateDefaultSubobject<USceneComponent>("Double Jump Socket");
-	DoubleJumpSocket->SetupAttachment(RootComponent);
-
-	DoubleJump = CreateDefaultSubobject<UPaperFlipbookComponent>("Double Jump Effect");
-	DoubleJump->SetupAttachment(DoubleJumpSocket);
+	ExtraJumpEffect = CreateDefaultSubobject<UPaperFlipbookComponent>("Extra Jump Effect");
+	ExtraJumpEffect->SetupAttachment(RootComponent);
 }
 
 void ASparCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	DoubleJump->Stop();
-	DoubleJump->SetLooping(false);
-	DoubleJump->SetVisibility(false);
+	ExtraJumpEffect->Stop();
+	ExtraJumpEffect->SetLooping(false);
+	ExtraJumpEffect->SetVisibility(false);
 }
 
 void ASparCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -111,50 +108,51 @@ void ASparCharacter::Attack()
 void ASparCharacter::OnJumped_Implementation()
 {
 	Super::OnJumped_Implementation();
-	if (JumpCurrentCount > 1)
+	if (JumpCurrentCount <= 1)
 	{
-		EnableDoubleJumpEffect();
-		const float FlipbookLength = DoubleJump->GetFlipbookLength();
-		FTimerHandle TimerHandle;
-		GetWorldTimerManager().SetTimer(
-			TimerHandle,
-			[&]() -> void
-			{
-				DisableDoubleJumpEffect();
-				TimerHandle.Invalidate();
-			},
-			FlipbookLength,
-			false
-		);
+		return;
 	}
-}
 
-void ASparCharacter::EnableDoubleJumpEffect()
-{
-	FDetachmentTransformRules DetachmentRules = FDetachmentTransformRules(
-		EDetachmentRule::KeepWorld,
-		EDetachmentRule::KeepWorld,
-		EDetachmentRule::KeepWorld,
-		true
-	);
-	DoubleJump->DetachFromComponent(DetachmentRules);
-	DoubleJump->SetVisibility(true);
-	DoubleJump->PlayFromStart();
-}
-
-void ASparCharacter::DisableDoubleJumpEffect()
-{
-	DoubleJump->Stop();
-	DoubleJump->SetVisibility(false);
-	FAttachmentTransformRules AttachmentRules = FAttachmentTransformRules(
-		EAttachmentRule::KeepRelative,
-		EAttachmentRule::KeepRelative,
-		EAttachmentRule::KeepRelative,
+	UPaperFlipbookComponent* ExtraJumpDuplicate = EnableExtraJumpEffect();
+	const float FlipbookLength = ExtraJumpDuplicate->GetFlipbookLength();
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(
+		TimerHandle,
+		[&, Duplicate=ExtraJumpDuplicate]() -> void
+		{
+			DisableExtraJumpEffect(Duplicate);
+			TimerHandle.Invalidate();
+		},
+		FlipbookLength,
 		false
 	);
-	const bool AttachementResult = DoubleJump->AttachToComponent(DoubleJumpSocket, AttachmentRules);
-	if (AttachementResult)
+}
+
+UPaperFlipbookComponent* ASparCharacter::EnableExtraJumpEffect()
+{
+	UPaperFlipbookComponent* ExtraJumpDuplicate = DuplicateObject<UPaperFlipbookComponent>(ExtraJumpEffect, ExtraJumpEffect->GetOuter());
+	if (IsValid(ExtraJumpDuplicate))
 	{
-		DoubleJump->SetRelativeLocation(FVector::ZeroVector);
+		ExtraJumpDuplicate->RegisterComponent();
+		const FDetachmentTransformRules DetachmentRules = FDetachmentTransformRules(
+			EDetachmentRule::KeepWorld,
+			EDetachmentRule::KeepWorld,
+			EDetachmentRule::KeepWorld,
+			true
+		);
+		ExtraJumpDuplicate->DetachFromComponent(DetachmentRules);
+		ExtraJumpDuplicate->SetVisibility(true);
+		ExtraJumpDuplicate->PlayFromStart();
+	}
+	return ExtraJumpDuplicate;
+}
+
+void ASparCharacter::DisableExtraJumpEffect(UPaperFlipbookComponent* ExtraJumpDuplicate)
+{
+	if (IsValid(ExtraJumpDuplicate))
+	{
+		ExtraJumpDuplicate->Stop();
+		ExtraJumpDuplicate->SetVisibility(false);
+		ExtraJumpDuplicate->DestroyComponent();
 	}
 }
