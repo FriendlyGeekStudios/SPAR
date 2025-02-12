@@ -14,5 +14,5 @@ struct FWeaponInfo : public FTableRowBase
 	FString Name = "";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AActor* WeaponClass;
+	AActor* WeaponClass = nullptr;
 };

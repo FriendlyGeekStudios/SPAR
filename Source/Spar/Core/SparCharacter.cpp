@@ -6,9 +6,8 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
+#include "InteractComponent.h"
 #include "PaperFlipbookComponent.h"
-
-#include "Kismet/KismetSystemLibrary.h"
 
 #include "Spar/Weapons/WeaponBase.h"
 
@@ -32,6 +31,8 @@ ASparCharacter::ASparCharacter()
 
 	DoubleJump = CreateDefaultSubobject<UPaperFlipbookComponent>("Double Jump Effect");
 	DoubleJump->SetupAttachment(DoubleJumpSocket);
+
+	InteractComponent = CreateDefaultSubobject<UInteractComponent>("Interact Component");
 }
 
 void ASparCharacter::BeginPlay()
@@ -98,6 +99,21 @@ void ASparCharacter::JumpStarted()
 void ASparCharacter::JumpEnded()
 {
 	StopJumping();
+}
+
+void ASparCharacter::DropItem()
+{
+	if (IsValid(EquippedWeapon))
+	{
+		FDetachmentTransformRules DetachmentRules = FDetachmentTransformRules(
+            EDetachmentRule::KeepWorld,
+            EDetachmentRule::KeepWorld,
+            EDetachmentRule::KeepWorld,
+            true
+        );
+		EquippedWeapon->DetachFromActor(DetachmentRules);
+		EquippedWeapon = nullptr;
+	}
 }
 
 void ASparCharacter::Attack()

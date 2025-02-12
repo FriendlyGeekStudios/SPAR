@@ -5,8 +5,10 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "InteractComponent.h"
 #include "SparCharacter.h"
 #include "SparGameMode.h"
+
 
 void ASparController::SetupInputComponent()
 {
@@ -22,6 +24,9 @@ void ASparController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Canceled, this, &ASparController::JumpEnded);
 
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &ASparController::Attack);
+
+		EnhancedInputComponent->BindAction(PickupAction, ETriggerEvent::Started, this, &ASparController::OnPickupAction);
+		EnhancedInputComponent->BindAction(DropAction, ETriggerEvent::Started, this, &ASparController::OnDropAction);
 	}
 }
 
@@ -83,6 +88,25 @@ void ASparController::Attack()
 	if (IsValid(ControlledCharacter))
 	{
 		ControlledCharacter->Attack();
+	}
+}
+
+void ASparController::OnDropAction()
+{
+	if (IsValid(ControlledCharacter))
+	{
+		ControlledCharacter->DropItem();
+	}
+}
+
+void ASparController::OnPickupAction()
+{
+	if (IsValid(ControlledCharacter))
+	{
+		if (UInteractComponent* InteractComponent = Cast<UInteractComponent>(ControlledCharacter->GetComponentByClass(UInteractComponent::StaticClass())))
+		{
+			InteractComponent->Interact();
+		}
 	}
 }
 

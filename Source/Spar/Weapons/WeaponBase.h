@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Spar/Core/Interactable.h"
 #include "WeaponBase.generated.h"
 
 class UBoxComponent;
 class UPaperFlipbookComponent;
 
 UCLASS()
-class SPAR_API AWeaponBase : public AActor
+class SPAR_API AWeaponBase : public AActor, public IInteractable
 {
 	GENERATED_BODY()
 

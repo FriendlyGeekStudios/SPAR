@@ -4,7 +4,6 @@
 #include "WeaponBase.h"
 #include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
-#include "Spar/Core/SparCharacter.h"
 
 
 // Sets default values
@@ -27,27 +26,11 @@ AWeaponBase::AWeaponBase()
 void AWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	PickupCollider->OnComponentBeginOverlap.AddDynamic(this, &AWeaponBase::OnPickupOverlapBegin);
 }
 
-void AWeaponBase::OnPickupOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-                                       const FHitResult& SweepResult)
+void AWeaponBase::OnPickupOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+	const FHitResult& SweepResult)
 {
-	ASparCharacter* PlayerCharacter = Cast<ASparCharacter>(OtherActor);
-	if (!IsValid(PlayerCharacter))
-	{
-		return;
-	}
-
-
-	// Try to attach to our player
-	if (!PlayerCharacter->HasWeapon())
-	{
-		PlayerCharacter->EquipWeapon(this);
-		PickupCollider->OnComponentBeginOverlap.RemoveDynamic(this, &AWeaponBase::OnPickupOverlapBegin);
-	}
 }
 
 // Called every frame

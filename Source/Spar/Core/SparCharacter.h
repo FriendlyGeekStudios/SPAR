@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "SparCharacter.generated.h"
 
+class UInteractComponent;
 class AWeaponBase;
 class UCameraComponent;
 class USpringArmComponent;
@@ -34,6 +35,8 @@ public:
 	void JumpStarted();
 	void JumpEnded();
 
+	void DropItem();
+
 	void Attack();
 
 protected:
@@ -55,6 +58,9 @@ protected:
 	TObjectPtr<UPaperFlipbookComponent> DoubleJump;
 
 	TObjectPtr<AWeaponBase> EquippedWeapon = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UInteractComponent> InteractComponent;
 
 private:
 	bool bIsArmed = false;

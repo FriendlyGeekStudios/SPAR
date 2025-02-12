@@ -18,6 +18,7 @@ class SPAR_API ASparController : public APlayerController
 {
 	GENERATED_BODY()
 
+	
 	virtual void SetupInputComponent() override;
 	virtual void SetupInactiveStateInputComponent(UInputComponent* InComponent) override;
 
@@ -36,6 +37,9 @@ private:
 
 	void Attack();
 
+	void OnPickupAction();
+	void OnDropAction();
+
 	void OnJoinGameTriggered();
 
 protected:
@@ -49,6 +53,10 @@ protected:
 	UInputAction* JumpAction;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UInputAction* AttackAction;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UInputAction* PickupAction;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UInputAction* DropAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UInputMappingContext* JoinGameMappingContext;
