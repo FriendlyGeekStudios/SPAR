@@ -21,17 +21,24 @@ void UInteractComponent::Interact()
 {
 	if (InteractTarget != nullptr) // if(InteractTarget)
 	{
-		// IInteractable::Execute_Interact(InteractTarget);
-		InteractTarget->Interact();
+		AActor* Instigator = GetOwner();
+		IInteractable::Execute_Interact(InteractTarget, Instigator);
+		// InteractTarget->Interact(Instigator);
 	}
 }
 
 void UInteractComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                         const FHitResult& SweepResult)
 {
-	if (IInteractable* OverlapTarget = Cast<IInteractable>(OtherActor))
+	if (OtherActor->Implements<UInteractable>())
 	{
-		InteractTarget = OverlapTarget;
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Overlap target is an interactable"));
+		InteractTarget = OtherActor;
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlap target is NOT interactable"));
+		UE_LOG(LogTemp, Warning, TEXT("Overlap target is not an interactable"));
 	}
 }
 
@@ -40,6 +47,7 @@ void UInteractComponent::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 {
 	if (IInteractable* OverlapTarget = Cast<IInteractable>(OtherActor))
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Marking Target as nullptr"));
 		InteractTarget = nullptr;
 	}
 }
@@ -49,7 +57,7 @@ void UInteractComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	PickupRange->AttachToComponent(GetOwner()->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 
 	PickupRange->OnComponentBeginOverlap.AddDynamic(this, &UInteractComponent::OnOverlapBegin);
 	PickupRange->OnComponentEndOverlap.AddDynamic(this, &UInteractComponent::OnOverlapEnd);

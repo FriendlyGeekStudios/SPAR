@@ -7,6 +7,7 @@
 #include "InteractComponent.generated.h"
 
 
+class UInteractable;
 class IInteractable;
 class USphereComponent;
 
@@ -38,5 +39,6 @@ protected:
 	TObjectPtr<USphereComponent> PickupRange;
 
 private:
-	IInteractable* InteractTarget = nullptr;
+	UPROPERTY()
+	AActor* InteractTarget = nullptr;
 };

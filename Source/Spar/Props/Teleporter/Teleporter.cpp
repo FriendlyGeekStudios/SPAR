@@ -5,7 +5,7 @@
 
 #include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
-
+#include "GameFramework/Character.h"
 
 // Sets default values
 ATeleporter::ATeleporter()
@@ -44,12 +44,18 @@ void ATeleporter::BeginPlay()
 
 void ATeleporter::OnPlayerEnterRight(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	TeleportPlayerTo(OtherActor, DestinationTeleporter->LeftOutput->GetComponentLocation());
+	if (ACharacter* Character = Cast<ACharacter>(OtherActor))
+	{
+		TeleportPlayerTo(OtherActor, DestinationTeleporter->LeftOutput->GetComponentLocation());
+	}
 }
 
 void ATeleporter::OnPlayerEnterLeft(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	TeleportPlayerTo(OtherActor, DestinationTeleporter->RightOutput->GetComponentLocation());
+	if (ACharacter* Character = Cast<ACharacter>(OtherActor))
+	{
+		TeleportPlayerTo(OtherActor, DestinationTeleporter->RightOutput->GetComponentLocation());
+	}
 }
 
 // Called every frame

@@ -33,6 +33,7 @@ ASparCharacter::ASparCharacter()
 	DoubleJump->SetupAttachment(DoubleJumpSocket);
 
 	InteractComponent = CreateDefaultSubobject<UInteractComponent>("Interact Component");
+	// InteractComponent->SetupAtt
 }
 
 void ASparCharacter::BeginPlay()
@@ -113,6 +114,7 @@ void ASparCharacter::DropItem()
         );
 		EquippedWeapon->DetachFromActor(DetachmentRules);
 		EquippedWeapon = nullptr;
+		bIsArmed = false;
 	}
 }
 

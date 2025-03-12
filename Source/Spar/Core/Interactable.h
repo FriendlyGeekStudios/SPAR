@@ -22,6 +22,5 @@ class SPAR_API IInteractable
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void Interact();
-	
+	void Interact(AActor* InteractingActor);
 };

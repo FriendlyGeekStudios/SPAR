@@ -13,6 +13,10 @@ class UPaperFlipbookComponent;
 UCLASS()
 class SPAR_API AWeaponBase : public AActor, public IInteractable
 {
+public:
+	virtual void Interact_Implementation(AActor* InteractingActor) override;
+
+private:
 	GENERATED_BODY()
 
 public:
@@ -25,11 +29,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	UFUNCTION()
-	void OnPickupOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	                      UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-	                      bool bFromSweep, const FHitResult& SweepResult);
 
 public:
 	// Called every frame

@@ -4,7 +4,19 @@
 #include "WeaponBase.h"
 #include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
+#include "Spar/Core/SparCharacter.h"
 
+
+void AWeaponBase::Interact_Implementation(AActor* InteractingActor)
+{
+	if (ASparCharacter* Character = Cast<ASparCharacter>(InteractingActor))
+	{
+		if (!Character->HasWeapon())
+		{
+			Character->EquipWeapon(this);
+		}
+	}
+}
 
 // Sets default values
 AWeaponBase::AWeaponBase()
@@ -26,11 +38,6 @@ AWeaponBase::AWeaponBase()
 void AWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
-}
-
-void AWeaponBase::OnPickupOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-	const FHitResult& SweepResult)
-{
 }
 
 // Called every frame
