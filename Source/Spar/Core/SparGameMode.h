@@ -27,9 +27,13 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnNewPlayerJoined OnNewPlayerJoined;
 
+	void RegisterNewPlayer();
+
 private:
 	void GatherAllPlayerStarts();
 	APlayerStart* GetPlayerStart(int32 PlayerIndex);
+	UFUNCTION()
+	void OnPlayerRegistered(APlayerController* Controller);
 	APlayerController* GetOrSpawnNewPlayerController(int32 PlayerIndex);
 	void GatherSharedCamera();
 
@@ -41,4 +45,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	ASharedCamera* SharedCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TMap<APlayerController*, bool> RegisteredPlayers; // bool if the player is alive
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TMap<APlayerController*, int32> PlayerScores; // bool if the player is alive
 };

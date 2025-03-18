@@ -10,6 +10,9 @@
 class ASparCharacter;
 class UInputAction;
 class UInputMappingContext;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCharacterPossessed, APlayerController*, Controller);
+
 /**
  * 
  */
@@ -18,7 +21,7 @@ class SPAR_API ASparController : public APlayerController
 {
 	GENERATED_BODY()
 
-	
+public:
 	virtual void SetupInputComponent() override;
 	virtual void SetupInactiveStateInputComponent(UInputComponent* InComponent) override;
 
@@ -28,6 +31,8 @@ class SPAR_API ASparController : public APlayerController
 
 	virtual void BeginInactiveState() override;
 	virtual void EndInactiveState() override;
+
+	FOnCharacterPossessed OnCharacterPossessed;
 
 private:
 	void Move(const FInputActionValue& Value);

@@ -26,6 +26,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void Attack();
 
+	void OnWeaponPickedUp();
+	void OnWeaponDropped();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -37,6 +40,8 @@ public:
 protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USceneComponent> SceneComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<USceneComponent> MountPoint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapons)
 	TObjectPtr<UPaperFlipbookComponent> WeaponSprite;

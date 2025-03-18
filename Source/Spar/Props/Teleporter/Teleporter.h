@@ -19,6 +19,8 @@ public:
 	ATeleporter();
 
 protected:
+	UFUNCTION()
+	void OnPlayerExit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -26,6 +28,8 @@ protected:
 	void OnPlayerEnterRight(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void OnPlayerEnterLeft(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	void ClearLastTeleportedActor();
 
 public:
 	// Called every frame
@@ -52,4 +56,7 @@ protected:
 
 	UPROPERTY(EditInstanceOnly)
 	TObjectPtr<ATeleporter> DestinationTeleporter = nullptr;
+
+private:
+	TWeakObjectPtr<AActor> LastTeleportedActor;
 };

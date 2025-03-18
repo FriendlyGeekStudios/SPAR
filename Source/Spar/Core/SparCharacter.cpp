@@ -25,6 +25,8 @@ ASparCharacter::ASparCharacter()
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
 	WeaponAttachPoint = CreateDefaultSubobject<USceneComponent>("Weapon Attach Point");
+	WeaponAttachPoint->SetupAttachment(RootComponent);
+	
 
 	DoubleJumpSocket = CreateDefaultSubobject<USceneComponent>("Double Jump Socket");
 	DoubleJumpSocket->SetupAttachment(RootComponent);
@@ -42,6 +44,8 @@ void ASparCharacter::BeginPlay()
 	DoubleJump->Stop();
 	DoubleJump->SetLooping(false);
 	DoubleJump->SetVisibility(false);
+
+	WeaponAttachPoint->SetRelativeLocation(FVector::ZeroVector);
 }
 
 void ASparCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -56,7 +60,7 @@ bool ASparCharacter::HasWeapon() const
 
 void ASparCharacter::EquipWeapon(AWeaponBase* WeaponToEquip)
 {
-	WeaponToEquip->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+	WeaponToEquip->AttachToComponent(WeaponAttachPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	EquippedWeapon = WeaponToEquip;
 
 	bIsArmed = true;
@@ -102,17 +106,28 @@ void ASparCharacter::JumpEnded()
 	StopJumping();
 }
 
+bool ASparCharacter::IsTeleporting() const
+{
+	return bIsTeleporting;
+}
+
+void ASparCharacter::SetTeleporting(bool bNewTeleporting)
+{
+	bIsTeleporting = bNewTeleporting;
+}
+
 void ASparCharacter::DropItem()
 {
 	if (IsValid(EquippedWeapon))
 	{
 		FDetachmentTransformRules DetachmentRules = FDetachmentTransformRules(
-            EDetachmentRule::KeepWorld,
-            EDetachmentRule::KeepWorld,
-            EDetachmentRule::KeepWorld,
-            true
-        );
+			EDetachmentRule::KeepWorld,
+			EDetachmentRule::KeepWorld,
+			EDetachmentRule::KeepWorld,
+			true
+		);
 		EquippedWeapon->DetachFromActor(DetachmentRules);
+		EquippedWeapon->OnWeaponDropped();
 		EquippedWeapon = nullptr;
 		bIsArmed = false;
 	}

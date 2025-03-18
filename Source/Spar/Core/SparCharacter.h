@@ -35,6 +35,11 @@ public:
 	void JumpStarted();
 	void JumpEnded();
 
+	UFUNCTION(BlueprintCallable)
+	bool IsTeleporting() const;
+	UFUNCTION(BlueprintCallable)
+	void SetTeleporting(bool bNewTeleporting);
+
 	void DropItem();
 
 	void Attack();
@@ -64,6 +69,7 @@ protected:
 
 private:
 	bool bIsArmed = false;
+	bool bIsTeleporting = false;
 	void EnableDoubleJumpEffect();
 	void DisableDoubleJumpEffect();
 	void UpdateDirection(float MoveDirection);

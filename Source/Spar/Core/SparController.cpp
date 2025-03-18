@@ -10,6 +10,7 @@
 #include "SparGameMode.h"
 
 
+
 void ASparController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
@@ -57,6 +58,8 @@ void ASparController::OnPossess(APawn* InPawn)
 	{
 		InputSubsystem->AddMappingContext(GameplayMappingContext, 0);
 	}
+
+	OnCharacterPossessed.Broadcast(this);
 }
 
 void ASparController::Move(const FInputActionValue& Value)

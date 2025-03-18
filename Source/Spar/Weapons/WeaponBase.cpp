@@ -14,6 +14,7 @@ void AWeaponBase::Interact_Implementation(AActor* InteractingActor)
 		if (!Character->HasWeapon())
 		{
 			Character->EquipWeapon(this);
+			OnWeaponPickedUp();
 		}
 	}
 }
@@ -24,14 +25,28 @@ AWeaponBase::AWeaponBase()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SceneComponent = CreateDefaultSubobject<USceneComponent>("SceneComponent");
-	SetRootComponent(SceneComponent);
+	MountPoint = CreateDefaultSubobject<USceneComponent>("Mount Point");
+	SetRootComponent(MountPoint);
 
+	SceneComponent = CreateDefaultSubobject<USceneComponent>("SceneComponent");
+	SceneComponent->SetupAttachment(RootComponent);
+	
 	WeaponSprite = CreateDefaultSubobject<UPaperFlipbookComponent>("Weapon Sprite");
-	WeaponSprite->SetupAttachment(RootComponent);
+	WeaponSprite->SetupAttachment(SceneComponent);
 
 	PickupCollider = CreateDefaultSubobject<UBoxComponent>("Pickup Collider");
-	PickupCollider->SetupAttachment(RootComponent);
+	PickupCollider->SetupAttachment(SceneComponent);
+
+}
+
+void AWeaponBase::OnWeaponPickedUp()
+{
+	PickupCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AWeaponBase::OnWeaponDropped()
+{
+	PickupCollider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 // Called when the game starts or when spawned

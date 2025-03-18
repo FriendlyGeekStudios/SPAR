@@ -4,6 +4,7 @@
 #include "SparGameMode.h"
 
 #include "SparCharacter.h"
+#include "SparController.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "Multiplayer/SharedCamera.h"
@@ -54,6 +55,7 @@ void ASparGameMode::BeginPlay()
 		FirstPlayerController->Possess(NewPlayer);
 		FirstPlayerController->SetViewTargetWithBlend(SharedCamera);
 		OnNewPlayerJoined.Broadcast(NewPlayer);
+		OnPlayerRegistered(FirstPlayerController);
 	}
 }
 
@@ -103,6 +105,18 @@ APlayerStart* ASparGameMode::GetPlayerStart(int32 PlayerIndex)
 	return nullptr;
 }
 
+void ASparGameMode::OnPlayerRegistered(APlayerController* Controller)
+{
+	// Store the player controller in registered players and scores
+	RegisteredPlayers.Add(Controller, true);
+	PlayerScores.Add(Controller, 0);
+
+	if (ASparController* SparController = Cast<ASparController>(Controller))
+	{
+		SparController->OnCharacterPossessed.RemoveDynamic(this, &ASparGameMode::OnPlayerRegistered);
+	}
+}
+
 APlayerController* ASparGameMode::GetOrSpawnNewPlayerController(int32 PlayerIndex)
 {
 	APlayerController* OutPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), PlayerIndex);
@@ -110,6 +124,11 @@ APlayerController* ASparGameMode::GetOrSpawnNewPlayerController(int32 PlayerInde
 	{
 		// Create a new Player Controller
 		OutPlayerController = UGameplayStatics::CreatePlayer(GetWorld(), PlayerIndex);
+
+		if (ASparController* SparController = Cast<ASparController>(OutPlayerController))
+		{
+			SparController->OnCharacterPossessed.AddDynamic(this, &ASparGameMode::OnPlayerRegistered);
+		}
 	}
 	return OutPlayerController;
 }

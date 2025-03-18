@@ -6,6 +6,7 @@
 #include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
+#include "Spar/Core/SparCharacter.h"
 
 // Sets default values
 ATeleporter::ATeleporter()
@@ -31,6 +32,19 @@ ATeleporter::ATeleporter()
 	LeftOutput->SetupAttachment(LeftEntranceCollider);
 }
 
+void ATeleporter::OnPlayerExit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor != LastTeleportedActor)
+	{
+		ASparCharacter* Character = Cast<ASparCharacter>(OtherActor);
+		if (Character)
+		{
+			Character->SetTeleporting(false);
+			DestinationTeleporter->ClearLastTeleportedActor();
+		}
+	}
+}
+
 // Called when the game starts or when spawned
 void ATeleporter::BeginPlay()
 {
@@ -40,22 +54,34 @@ void ATeleporter::BeginPlay()
 
 	RightEntranceCollider->OnComponentBeginOverlap.AddUniqueDynamic(this, &ATeleporter::OnPlayerEnterRight);
 	LeftEntranceCollider->OnComponentBeginOverlap.AddUniqueDynamic(this, &ATeleporter::OnPlayerEnterLeft);
+
+	RightEntranceCollider->OnComponentEndOverlap.AddUniqueDynamic(this, &ATeleporter::OnPlayerExit);
+	LeftEntranceCollider->OnComponentEndOverlap.AddUniqueDynamic(this, &ATeleporter::OnPlayerExit);
 }
 
 void ATeleporter::OnPlayerEnterRight(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (ACharacter* Character = Cast<ACharacter>(OtherActor))
+	ASparCharacter* Character = Cast<ASparCharacter>(OtherActor);
+	if (Character && !Character->IsTeleporting())
 	{
+		Character->SetTeleporting(true);
 		TeleportPlayerTo(OtherActor, DestinationTeleporter->LeftOutput->GetComponentLocation());
 	}
 }
 
 void ATeleporter::OnPlayerEnterLeft(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (ACharacter* Character = Cast<ACharacter>(OtherActor))
+	ASparCharacter* Character = Cast<ASparCharacter>(OtherActor);
+	if (Character && !Character->IsTeleporting())
 	{
+		Character->SetTeleporting(true);
 		TeleportPlayerTo(OtherActor, DestinationTeleporter->RightOutput->GetComponentLocation());
 	}
+}
+
+void ATeleporter::ClearLastTeleportedActor()
+{
+	LastTeleportedActor = nullptr;
 }
 
 // Called every frame
@@ -67,5 +93,6 @@ void ATeleporter::Tick(float DeltaTime)
 void ATeleporter::TeleportPlayerTo(AActor* InActor, const FVector& Destination)
 {
 	GEngine->AddOnScreenDebugMessage(0, 5.0f, FColor::Red, "Teleporting Player");
+	LastTeleportedActor = InActor;
 	InActor->SetActorLocation(Destination);
 }
