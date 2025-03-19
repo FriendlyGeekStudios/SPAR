@@ -31,6 +31,8 @@ public:
 
 private:
 	void GatherAllPlayerStarts();
+
+	UFUNCTION(BlueprintCallable)
 	APlayerStart* GetPlayerStart(int32 PlayerIndex);
 	UFUNCTION()
 	void OnPlayerRegistered(APlayerController* Controller);
